@@ -1,21 +1,13 @@
-name: Deploy
+name: Deploy Cloudflare Worker
 
 on:
   push:
-  pull_request:
-  repository_dispatch:
+    branches:
+      - main  # or your branch name
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      # Add your build steps here
-
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
-    needs: build
     steps:
       - uses: actions/checkout@v2
       - name: Publish
