@@ -1,4 +1,4 @@
-name: Deploy Cloudflare Worker
+name: Deploy
 
 on:
   push:
@@ -10,8 +10,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Publish
-        uses: cloudflare/wrangler-action@3.8.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          command: publish
+          node-version: '16'  # Ensure you're using a node version compatible with your project
+
+      - name: Install Wrangler
+        run: npm install -g wrangler@latest
+
+      - name: Authenticate with Cloudflare
+        run: echo "$CF_API_TOKEN" | wrangler login
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+
+      - name: Publish to Cloudflare
+        run: wrangler publish
