@@ -1,5 +1,5 @@
 
-export const M3u8ProxyV1 = async (request: Request<unknown>) => {
+export const M3u8ProxyV4 = async (request: Request<unknown>) => {
   const url = new URL(request.url);
   const refererUrl = decodeURIComponent(url.searchParams.get("referer") || "");
   const targetUrl = decodeURIComponent(url.searchParams.get("url") || "");
@@ -34,20 +34,15 @@ export const M3u8ProxyV1 = async (request: Request<unknown>) => {
       if (matches?.length > 0) {
         // console.log({ matches });
 
-        const oldText = matches?.[0]?.replaceAll(/\"/g, "");
+        const oldText = matches?.[0];
         // console.log({ oldText });
 
         if (oldText.startsWith("http")) {
-          line = line.replace(oldText, `${url.origin}?url=${encodeURIComponent(oldText)}`);
+          line = line.replace(oldText, `"${url.origin}/m3u8-proxy/?url=${oldText}"`);
         } else {
-          // console.log(targetUrl.replace(/([^/]+\.m3u8)$/, "").trim());
-          const baseUrl = encodeURIComponent(`${targetUrl.match(/^(.+?\.m3u8)/)?.[1]
-            .split("/")
-            .slice(0, -1)
-            .join("/")}/`);
           line = line.replace(
             oldText,
-            `?url=${baseUrl}${encodeURIComponent(oldText)}${originUrl ? `&origin=${encodedOrigin}` : ""}${refererUrl ? `&referer=${encodedUrl}` : ""}`
+            `"/m3u8-proxy/?url=${targetUrlTrimmed}${oldText}${originUrl ? `&origin=${encodedOrigin}` : ""}${refererUrl ? `&referer=${encodedUrl}` : ""}"`
           );
         }
 
@@ -56,13 +51,9 @@ export const M3u8ProxyV1 = async (request: Request<unknown>) => {
         return line;
       }
       else if (line.startsWith('http')) {
-        return `${url.origin}?url=${line}`;
+        return `${url.origin}/m3u8-proxy/?url=${line}`;
       }
-      const baseUrl = encodeURIComponent(`${targetUrl.match(/^(.+?\.m3u8)/)?.[1]
-        .split("/")
-        .slice(0, -1)
-        .join("/")}/`);
-      return `?url=${baseUrl}${encodeURIComponent(line)}${originUrl ? `&origin=${encodedOrigin}` : ""
+      return `/m3u8-proxy/?url=${targetUrlTrimmed}${line}${originUrl ? `&origin=${encodedOrigin}` : ""
         }${refererUrl ? `&referer=${encodedUrl}` : ""
         }`;
     }).join("\n");

@@ -2,6 +2,7 @@ import { M3u8ProxyPcmirror } from "./logic/pcmirror";
 import { M3u8ProxyV1 } from "./logic/v1";
 import { M3u8ProxyV2 } from "./logic/v2";
 import { M3u8ProxyV3 } from "./logic/v3";
+import { M3u8ProxyV4 } from "./logic/v4";
 
 addEventListener("fetch", (event) => {
   event.respondWith(respondfetch(event.request));
@@ -13,6 +14,7 @@ async function respondfetch(request: Request) {
 
   if (pathname === "/") return M3u8ProxyV1(request)
   if (pathname === "/v3") return M3u8ProxyV3(request)
+  if (pathname === "/m3u8-proxy") return M3u8ProxyV4(request)
   if (pathname === "/pcmirror") return M3u8ProxyPcmirror(request)
   if (pathname === "/v2") {
     if (request.method == "OPTIONS") return new Response(null, {
